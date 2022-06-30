@@ -1,0 +1,29 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  DOCKER_IMAGE: adrianliechti/loop-jenkins
+
+tasks:
+  push:
+    cmds:
+      - task: push-base
+      - task: push-dind
+
+  push-base:
+    cmds:
+      - docker buildx build --push --platform linux/arm64,linux/amd64 --tag {{.DOCKER_IMAGE}} .
+
+  push-dind:
+    cmds:
+      - docker buildx build --push --platform linux/arm64,linux/amd64 --tag {{.DOCKER_IMAGE}}:dind dind -f dind/Dockerfile
+
+  install:
+    cmds:
+      - kubectl create ns loop -o yaml --dry-run=client | kubectl apply -f -
+      - kubectl apply -f kubernetes/*
+
+  uninstall:
+    cmds:
+      - kubectl delete -f kubernetes/*

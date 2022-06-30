@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins
+  namespace: loop
+  labels:
+    app: jenkins
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: jenkins
+  labels:
+    app: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: loop
+  labels:
+    app: jenkins
+spec:
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: jenkins
+      containers:
+        - name: jenkins
+          image: adrianliechti/loop-jenkins
+          imagePullPolicy: Always
+          env:
+            - name: BASE_URL
+              value: http://jenkins.loop
+            - name: ADMIN_USERNAME
+              value: ""
+            - name: ADMIN_PASSWORD
+              value: ""
+            - name: DOCKER_HOST
+              value: "unix:///var/run/dind/docker.sock"
+          ports:
+            - containerPort: 8080
+            - containerPort: 50000
+          volumeMounts:
+            - name: data
+              mountPath: /var/jenkins_home
+            - name: dind
+              mountPath: /var/run/dind
+          resources: {}
+        - name: docker
+          securityContext:
+            privileged: true
+          image: "docker:20-dind"
+          imagePullPolicy: Always
+          args:
+            - "--group"
+            - "1000"
+            - "--host"
+            - "unix:///var/run/dind/docker.sock"
+            - "--mtu"
+            - "1440"
+          ports:
+            - name: docker
+              containerPort: 2376
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /var/jenkins_home
+            - name: dind
+              mountPath: /var/run/dind
+          resources: {}
+      initContainers:
+        - name: init-workspace
+          image: busybox:stable
+          command: ["chown", "1000:1000", "/var/jenkins_home"]
+          volumeMounts:
+            - name: data
+              mountPath: /var/jenkins_home
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: jenkins
+        - name: dind
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: loop
+  labels:
+    app: jenkins
+spec:
+  type: ClusterIP
+  selector:
+    app: jenkins
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins
+  namespace: loop
+  labels:
+    app: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
