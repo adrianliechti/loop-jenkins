@@ -12,10 +12,10 @@ ENV JENKINS_REF /usr/share/jenkins/ref
 ENV JENKINS_HOME /var/jenkins_home
 
 ARG JENKINS_VERSION
-ENV JENKINS_VERSION ${JENKINS_VERSION:-2.346.1}
+ENV JENKINS_VERSION ${JENKINS_VERSION:-2.426.1}
 
 ARG JENKINS_PM_VERSION
-ENV JENKINS_PM_VERSION ${JENKINS_PM_VERSION:-2.12.6}
+ENV JENKINS_PM_VERSION ${JENKINS_PM_VERSION:-2.12.13}
 
 ENV BASE_URL=http://localhost:8080
 
@@ -47,11 +47,11 @@ COPY --chown=1000:1000 ref/ $JENKINS_REF/
 RUN jenkins-plugin-cli --plugin-file $JENKINS_REF/plugins.txt
 
 # Docker CLI
-ENV DOCKER_VERSION="20.10.16"
+ENV DOCKER_VERSION="24.0.7"
 RUN curl -fsSL "https://download.docker.com/linux/static/stable/$(uname -m)/docker-${DOCKER_VERSION}.tgz" | tar -zxf - --strip=1 -C /usr/local/bin/ docker/docker
 
 # Kubenetes CLI
-ENV KUBERNETES_VERSION="1.24.2"
+ENV KUBERNETES_VERSION="1.28.4"
 RUN arch=$(uname -m) && \
     if [ "${arch}" = "x86_64" ]; then \
     arch="amd64"; \
