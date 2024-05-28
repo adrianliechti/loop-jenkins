@@ -21,7 +21,7 @@ tasks:
 
   install:
     cmds:
-      - kubectl create ns loop -o yaml --dry-run=client | kubectl apply -f -
+      - kubectl create ns jenkins -o yaml --dry-run=client | kubectl apply -f -
       - kubectl apply -f kubernetes/*
 
   uninstall:

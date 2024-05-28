@@ -5,3 +5,11 @@ jenkins:
   disabledAdministrativeMonitors:
     - "jenkins.diagnostics.ControllerExecutorsNoAgents"
     - "jenkins.diagnostics.RootUrlNotSetMonitor"
+
+appearance:
+  prism:
+    theme: PRISM
+    
+  themeManager:
+    disableUserThemes: false
+    theme: "darkSystem"
