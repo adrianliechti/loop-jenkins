@@ -3,7 +3,7 @@
 version: "3"
 
 vars:
-  DOCKER_IMAGE: adrianliechti/loop-jenkins
+  DOCKER_IMAGE: ghcr.io/adrianliechti/loop-jenkins
 
 tasks:
   push:
