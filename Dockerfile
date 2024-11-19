@@ -12,10 +12,10 @@ ENV JENKINS_REF /usr/share/jenkins/ref
 ENV JENKINS_HOME /var/jenkins_home
 
 ARG JENKINS_VERSION
-ENV JENKINS_VERSION ${JENKINS_VERSION:-2.462.1}
+ENV JENKINS_VERSION ${JENKINS_VERSION:-2.479.1}
 
 ARG JENKINS_PM_VERSION
-ENV JENKINS_PM_VERSION ${JENKINS_PM_VERSION:-2.13.0}
+ENV JENKINS_PM_VERSION ${JENKINS_PM_VERSION:-2.13.2}
 
 ENV BASE_URL=http://localhost:8080
 
@@ -51,7 +51,7 @@ ENV DOCKER_VERSION="26.1.4"
 RUN curl -fsSL "https://download.docker.com/linux/static/stable/$(uname -m)/docker-${DOCKER_VERSION}.tgz" | tar -zxf - --strip=1 -C /usr/local/bin/ docker/docker
 
 # Kubenetes CLI
-ENV KUBERNETES_VERSION="1.31.0"
+ENV KUBERNETES_VERSION="1.31.2"
 RUN arch=$(uname -m) && \
     if [ "${arch}" = "x86_64" ]; then \
     arch="amd64"; \
